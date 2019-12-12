@@ -9,62 +9,130 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-// var tableData = require("/data/notes");
+let currentID = 0;
+
+// req web browser
+//res middleware 
+
+
+// API ROUTES
+
+//GET
+app.get("/api/notes", function (req, res) {
+    fs.readFile('db/db.json', "utf8", (err, data) => {
+        if (err) throw err;
+        res.json(data);
+    })
+});
+
+
+
+//POST
+var id = 0;
+app.post("/api/notes", function (req, res) {
+    fs.readFile('db/db.json', (err, data) => {
+                if (err) throw err;
+                let json = JSON.parse(data);
+                let newNote = {
+                    id: id = 1 + json.length,
+                    title: req.body.title,
+                    text: req.body.text,
+                };
+                console.log(req.body)
+                json.push(newNote);
+                fs.writeFile('db/db.json', JSON.stringify(json), (err) => {
+                    if (err) throw err;
+                    res.send('New Note: ' + newNote);
+                });
+            });
+        });
+
+
+//DELETE
+
 
 
 // HTML ROUTES
 
-app.get("*", function(req, res) {
-    res.sendFile(path.join(__dirname, "/public/index.html"));
-  });
+app.get('/notes', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'notes.html'));
+});
 
-  app.get("/notes", function(req, res) {
-    res.sendFile(path.join(__dirname, "/public/notes.html"));
-  });
 
-  app.listen(PORT, function() {
-    console.log("App listening on PORT: " + PORT);
-  });
 
-// API ROUTES
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
-// module.exports = function (app) {
-//     // API GET Requests
-//     // Below code handles when users "visit" a page.
-//     // In each of the below cases when a user visits a link
-//     // (ex: localhost:PORT/api/admin... they are shown a JSON of the data in the table)
-//     // ---------------------------------------------------------------------------
-  
-//     app.get("/api/tables", function (req, res) {
-//       res.json(tableData);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// app.get('/api/notes', (req, res) => {
+//     fs.readFile('db/db.json', (err, data) => {
+//         if (err) throw err;
+//         let json = JSON.parse(data);
+//         res.send(json);
 //     });
-  
-//     app.get("/api/waitlist", function (req, res) {
-//       res.json(waitListData);
+// });
+
+// app.post('/api/notes', (req, res) => {
+//     fs.readFile('db/db.json', (err, data) => {
+//         if (err) throw err;
+//         let json = JSON.parse(data);
+//         currentID = currentID + 1;
+//         let newNote = {
+//             id: currentID,
+//             title: req.body.title,
+//             text: req.body.text,
+//         };
+//         json.push(newNote);
+//         fs.writeFile('db/db.json', JSON.stringify(json), (err) => {
+//             if (err) throw err;
+//             res.send('New Note: ' + newNote);
+//         });
 //     });
-  
- 
-//     // ---------------------------------------------------------------------------
-  
-//     app.post("/api/tables", function (req, res) {
-  
-//       if (tableData.length < 5) {
-//         tableData.push(req.body);
-//         res.json(true);
-//       }
-//       else {
-//         waitListData.push(req.body);
-//         res.json(false);
-//       }
+// });
+
+// app.delete('/api/notes/:id', (req, res) => {
+//     fs.readFile('db/db.json', (err, data) => {
+//         if (err) throw err;
+//         let deleteNote = req.params.id;
+//         let json = JSON.parse(data);
+//         let jsonDelete = json.filter(item => item.id !== deleteNote);
+//         // for (let i = 0; i < json.length; i++) {
+//         //     if (json[i].id === deleteNote) {
+//         //         json.splice(i, 1);
+//         //     };
+//         // };
+//         fs.writeFile('db/db.json', JSON.stringify(jsonDelete), (err) => {
+//             if (err) throw err;
+//             res.send('Note Deleted.');
+//         });
 //     });
-  
-  
-//     app.post("/api/clear", function (req, res) {
- 
-//         tableData.length = 0;
-//       waitListData.length = 0;
-  
-//       res.json({ ok: true });
-//     });
-//   };
-  
+// });
+
+// LISTENING
+app.listen(PORT, function() {
+    console.log('App listening on PORT ' + PORT);
+});
