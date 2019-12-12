@@ -71,11 +71,11 @@ var handleNoteDelete = function(event) {
     .parent(".list-group-item")
     .data();
 
-  if (activeNote.id === note.id) {
+  if (activeNote.title === note.title) {
     activeNote = {};
   }
 
-  deleteNote(note.id).then(function() {
+  deleteNote(note.title).then(function() {
     getAndRenderNotes();
     renderActiveNote();
   });
@@ -128,7 +128,6 @@ var renderNoteList = function(notes) {
 // Gets notes from the db and renders them to the sidebar
 var getAndRenderNotes = function() {
   return getNotes().then(function(data) {
-    console.log(data)
     renderNoteList(JSON.parse(data));
   });
 };
